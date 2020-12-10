@@ -1,7 +1,7 @@
 semver
 ======
 
-Semantic version parsing and comparison. Fork of [the `semver` crate][semver-crate] which adds support for parsing of versions outside of [the semver spec][semver-spec], but popular in the wild.
+Semantic version parsing and comparison. Fork of [the `semver` crate][semver-crate] which adds support for parsing of versions outside of [the semver spec][semver-spec], but popular in the wild. See [issue 219](https://github.com/steveklabnik/semver/issues/219).
 
 Namely we extend [the parent crate][semver-crate] to support:
 
