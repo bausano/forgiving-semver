@@ -42,7 +42,9 @@ impl From<forgiving_semver_parser::version::Identifier> for Identifier {
     fn from(other: forgiving_semver_parser::version::Identifier) -> Identifier {
         match other {
             forgiving_semver_parser::version::Identifier::Numeric(n) => Identifier::Numeric(n),
-            forgiving_semver_parser::version::Identifier::AlphaNumeric(s) => Identifier::AlphaNumeric(s),
+            forgiving_semver_parser::version::Identifier::AlphaNumeric(s) => {
+                Identifier::AlphaNumeric(s)
+            }
         }
     }
 }
@@ -223,7 +225,7 @@ impl Version {
     /// stored in `u64`.
     ///
     /// The following are examples of what would the parent error on, but this fork allows:
-    /// * `1` 
+    /// * `1`
     /// * `1.0`
     ///
     /// The following are examples for other common error causes:
@@ -400,20 +402,26 @@ mod tests {
         assert_eq!(Version::parse(""), parse_error("expected more input"));
         assert_eq!(Version::parse("  "), parse_error("expected more input"));
         // IMPORTANT: These are the two tests which changed against parent.
-        assert_eq!(Version::parse("1"), Ok(Version {
-            major: 1,
-            minor: 0,
-            patch: 0,
-            pre: Vec::new(),
-            build: Vec::new(),
-        }));
-        assert_eq!(Version::parse("1.2"), Ok(Version {
-            major: 1,
-            minor: 2,
-            patch: 0,
-            pre: Vec::new(),
-            build: Vec::new(),
-        }));
+        assert_eq!(
+            Version::parse("1"),
+            Ok(Version {
+                major: 1,
+                minor: 0,
+                patch: 0,
+                pre: Vec::new(),
+                build: Vec::new(),
+            })
+        );
+        assert_eq!(
+            Version::parse("1.2"),
+            Ok(Version {
+                major: 1,
+                minor: 2,
+                patch: 0,
+                pre: Vec::new(),
+                build: Vec::new(),
+            })
+        );
         assert_eq!(Version::parse("1.2.3-"), parse_error("expected more input"));
         assert_eq!(
             Version::parse("a.b.c"),
