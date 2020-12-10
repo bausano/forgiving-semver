@@ -19,7 +19,7 @@ use std::hash;
 use std::result;
 use std::str;
 
-use semver_parser;
+use forgiving_semver_parser;
 
 #[cfg(feature = "serde")]
 use serde::de::{self, Deserialize, Deserializer, Visitor};
@@ -38,11 +38,11 @@ pub enum Identifier {
     AlphaNumeric(String),
 }
 
-impl From<semver_parser::version::Identifier> for Identifier {
-    fn from(other: semver_parser::version::Identifier) -> Identifier {
+impl From<forgiving_semver_parser::version::Identifier> for Identifier {
+    fn from(other: forgiving_semver_parser::version::Identifier) -> Identifier {
         match other {
-            semver_parser::version::Identifier::Numeric(n) => Identifier::Numeric(n),
-            semver_parser::version::Identifier::AlphaNumeric(s) => Identifier::AlphaNumeric(s),
+            forgiving_semver_parser::version::Identifier::Numeric(n) => Identifier::Numeric(n),
+            forgiving_semver_parser::version::Identifier::AlphaNumeric(s) => Identifier::AlphaNumeric(s),
         }
     }
 }
@@ -125,8 +125,8 @@ pub struct Version {
     pub build: Vec<Identifier>,
 }
 
-impl From<semver_parser::version::Version> for Version {
-    fn from(other: semver_parser::version::Version) -> Version {
+impl From<forgiving_semver_parser::version::Version> for Version {
+    fn from(other: forgiving_semver_parser::version::Version) -> Version {
         Version {
             major: other.major,
             minor: other.minor,
@@ -222,9 +222,12 @@ impl Version {
     /// An error for overflow is returned if any numeric component is larger than what can be
     /// stored in `u64`.
     ///
+    /// The following are examples of what would the parent error on, but this fork allows:
+    /// * `1` 
+    /// * `1.0`
+    ///
     /// The following are examples for other common error causes:
     ///
-    /// * `1.0` - too few numeric components are used. Exactly 3 are expected.
     /// * `1.0.01` - a numeric component has a leading zero.
     /// * `1.0.foo` - uses a non-numeric components where one is expected.
     /// * `1.0.0foo` - metadata is not separated using a legal character like, `+` or `-`.
@@ -233,7 +236,7 @@ impl Version {
     ///
     /// [semver]: https://semver.org
     pub fn parse(version: &str) -> Result<Version> {
-        let res = semver_parser::version::parse(version);
+        let res = forgiving_semver_parser::version::parse(version);
 
         match res {
             // Convert plain String error into proper ParseError
@@ -396,8 +399,21 @@ mod tests {
 
         assert_eq!(Version::parse(""), parse_error("expected more input"));
         assert_eq!(Version::parse("  "), parse_error("expected more input"));
-        assert_eq!(Version::parse("1"), parse_error("expected more input"));
-        assert_eq!(Version::parse("1.2"), parse_error("expected more input"));
+        // IMPORTANT: These are the two tests which changed against parent.
+        assert_eq!(Version::parse("1"), Ok(Version {
+            major: 1,
+            minor: 0,
+            patch: 0,
+            pre: Vec::new(),
+            build: Vec::new(),
+        }));
+        assert_eq!(Version::parse("1.2"), Ok(Version {
+            major: 1,
+            minor: 2,
+            patch: 0,
+            pre: Vec::new(),
+            build: Vec::new(),
+        }));
         assert_eq!(Version::parse("1.2.3-"), parse_error("expected more input"));
         assert_eq!(
             Version::parse("a.b.c"),
@@ -858,8 +874,6 @@ mod tests {
 
         assert_eq!("".parse(), parse_error("expected more input"));
         assert_eq!("  ".parse(), parse_error("expected more input"));
-        assert_eq!("1".parse(), parse_error("expected more input"));
-        assert_eq!("1.2".parse(), parse_error("expected more input"));
         assert_eq!("1.2.3-".parse(), parse_error("expected more input"));
         assert_eq!(
             "a.b.c".parse(),

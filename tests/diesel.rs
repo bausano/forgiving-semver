@@ -7,7 +7,7 @@ extern crate semver;
 use diesel::connection::SimpleConnection;
 use diesel::sql_types::Text;
 use diesel::*;
-use semver::{Version, VersionReq};
+use forgiving_semver::{Version, VersionReq};
 
 table! {
     versions (name) {

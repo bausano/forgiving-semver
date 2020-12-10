@@ -46,7 +46,7 @@
 //! [`parse`]: struct.Version.html#method.parse
 //!
 //! ```{rust}
-//! use semver::Version;
+//! use forgiving_semver::Version;
 //!
 //! assert!(Version::parse("1.2.3") == Ok(Version {
 //!    major: 1,
@@ -61,7 +61,7 @@
 //! to compare them:
 //!
 //! ```{rust}
-//! use semver::Version;
+//! use forgiving_semver::Version;
 //!
 //! assert!(Version::parse("1.2.3-alpha") != Version::parse("1.2.3-beta"));
 //! assert!(Version::parse("1.2.3-alpha2") >  Version::parse("1.2.0"));
@@ -73,7 +73,7 @@
 //! Please note that in order to do this, you must use a mutable Version:
 //!
 //! ```{rust}
-//! use semver::Version;
+//! use forgiving_semver::Version;
 //!
 //! # fn try_increment_patch() -> Result<(), Box<::std::error::Error>> {
 //! let mut bugfix_release = Version::parse("1.0.0")?;
@@ -91,7 +91,7 @@
 //! (in accordance with section 7 of the spec)
 //!
 //! ```{rust}
-//! use semver::Version;
+//! use forgiving_semver::Version;
 //!
 //! # fn try_increment_minor() -> Result<(), Box<::std::error::Error>> {
 //! let mut feature_release = Version::parse("1.4.6")?;
@@ -109,7 +109,7 @@
 //! numbers reset to zero (in accordance with section 8 of the spec)
 //!
 //! ```{rust}
-//! use semver::Version;
+//! use forgiving_semver::Version;
 //!
 //! # fn try_increment_major() -> Result<(), Box<::std::error::Error>> {
 //! let mut chrome_release = Version::parse("41.5.5377")?;
@@ -133,8 +133,8 @@
 //!
 //! ```{rust}
 //! # #![allow(unstable)]
-//! use semver::Version;
-//! use semver::VersionReq;
+//! use forgiving_semver::Version;
+//! use forgiving_semver::VersionReq;
 //!
 //! # fn try_compare() -> Result<(), Box<::std::error::Error>> {
 //! let r = VersionReq::parse(">=1.0.0")?;
@@ -193,7 +193,7 @@
 #![deny(missing_docs)]
 #![cfg_attr(test, deny(warnings))]
 
-extern crate semver_parser;
+extern crate forgiving_semver_parser;
 
 // Serialization and deserialization support for version numbers
 #[cfg(feature = "serde")]
@@ -207,7 +207,7 @@ extern crate diesel;
 // We take the common approach of keeping our own module system private, and
 // just re-exporting the interface that we want.
 
-pub use semver_parser::Compat;
+pub use forgiving_semver_parser::Compat;
 pub use version::Identifier::{AlphaNumeric, Numeric};
 pub use version::{Identifier, SemVerError, Version};
 pub use version_req::{ReqParseError, VersionReq};

@@ -6,7 +6,7 @@ extern crate serde_derive;
 extern crate semver;
 extern crate serde_json;
 
-use semver::{Identifier, Version, VersionReq};
+use forgiving_semver::{Identifier, Version, VersionReq};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Identified {

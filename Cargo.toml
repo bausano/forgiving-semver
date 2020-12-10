@@ -1,21 +1,22 @@
 [package]
 
-name = "semver"
+name = "forgiving-semver"
 version = "0.11.0"
-authors = ["Steve Klabnik <steve@steveklabnik.com>", "The Rust Project Developers"]
+authors = ["Michael Bausano <michael@porkbrain.com>", "Steve Klabnik <steve@steveklabnik.com>", "The Rust Project Developers"]
 license = "MIT/Apache-2.0"
-repository = "https://github.com/steveklabnik/semver"
-homepage = "https://docs.rs/crate/semver/"
-documentation = "https://docs.rs/crate/semver/"
+repository = "https://github.com/bausano/forgiving-semver"
+homepage = "https://docs.rs/crate/forgiving-semver/"
+documentation = "https://docs.rs/crate/forgiving-semver/"
 description = """
-Semantic version parsing and comparison.
+Semantic version parsing and comparison. Fork of https://docs.rs/crate/semver
+which supports parsing outside of semver spec, e.g. "1.0" -> "1.0.0".
 """
 readme = "README.md"
 keywords = ["version", "semantic", "compare"]
 categories = ["development-tools", "parser-implementations"]
 
 [dependencies]
-semver-parser = "0.10.0"
+forgiving-semver-parser = "0.10"
 
 serde = { version = "1.0", optional = true }
 diesel = { version = "1.1", optional = true }

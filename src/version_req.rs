@@ -12,8 +12,8 @@ use std::error::Error;
 use std::fmt;
 use std::str;
 
-use semver_parser;
-use semver_parser::{Compat, RangeSet};
+use forgiving_semver_parser;
+use forgiving_semver_parser::{Compat, RangeSet};
 use version::Identifier;
 use Version;
 
@@ -36,8 +36,8 @@ pub struct VersionReq {
     compat: Compat, // defaults to Cargo
 }
 
-impl From<semver_parser::RangeSet> for VersionReq {
-    fn from(range_set: semver_parser::RangeSet) -> VersionReq {
+impl From<forgiving_semver_parser::RangeSet> for VersionReq {
+    fn from(range_set: forgiving_semver_parser::RangeSet) -> VersionReq {
         VersionReq {
             ranges: range_set.ranges.into_iter().map(From::from).collect(),
             compat: range_set.compat,
@@ -94,14 +94,14 @@ enum Op {
     LtEq, // Less than or equal to
 }
 
-impl From<semver_parser::Op> for Op {
-    fn from(op: semver_parser::Op) -> Op {
+impl From<forgiving_semver_parser::Op> for Op {
+    fn from(op: forgiving_semver_parser::Op) -> Op {
         match op {
-            semver_parser::Op::Eq => Op::Ex,
-            semver_parser::Op::Gt => Op::Gt,
-            semver_parser::Op::Gte => Op::GtEq,
-            semver_parser::Op::Lt => Op::Lt,
-            semver_parser::Op::Lte => Op::LtEq,
+            forgiving_semver_parser::Op::Eq => Op::Ex,
+            forgiving_semver_parser::Op::Gt => Op::Gt,
+            forgiving_semver_parser::Op::Gte => Op::GtEq,
+            forgiving_semver_parser::Op::Lt => Op::Lt,
+            forgiving_semver_parser::Op::Lte => Op::LtEq,
         }
     }
 }
@@ -112,8 +112,8 @@ struct Range {
     compat: Compat,
 }
 
-impl From<semver_parser::Range> for Range {
-    fn from(range: semver_parser::Range) -> Range {
+impl From<forgiving_semver_parser::Range> for Range {
+    fn from(range: forgiving_semver_parser::Range) -> Range {
         Range {
             predicates: range.comparator_set.into_iter().map(From::from).collect(),
             compat: range.compat,
@@ -130,8 +130,8 @@ struct Predicate {
     pre: Vec<Identifier>,
 }
 
-impl From<semver_parser::Comparator> for Predicate {
-    fn from(comparator: semver_parser::Comparator) -> Predicate {
+impl From<forgiving_semver_parser::Comparator> for Predicate {
+    fn from(comparator: forgiving_semver_parser::Comparator) -> Predicate {
         Predicate {
             op: From::from(comparator.op),
             major: comparator.major,
@@ -142,11 +142,11 @@ impl From<semver_parser::Comparator> for Predicate {
     }
 }
 
-impl From<semver_parser::Identifier> for Identifier {
-    fn from(identifier: semver_parser::Identifier) -> Identifier {
+impl From<forgiving_semver_parser::Identifier> for Identifier {
+    fn from(identifier: forgiving_semver_parser::Identifier) -> Identifier {
         match identifier {
-            semver_parser::Identifier::Numeric(n) => Identifier::Numeric(n),
-            semver_parser::Identifier::AlphaNumeric(s) => Identifier::AlphaNumeric(s),
+            forgiving_semver_parser::Identifier::Numeric(n) => Identifier::Numeric(n),
+            forgiving_semver_parser::Identifier::AlphaNumeric(s) => Identifier::AlphaNumeric(s),
         }
     }
 }
@@ -213,7 +213,7 @@ impl VersionReq {
     /// # Examples
     ///
     /// ```
-    /// use semver::VersionReq;
+    /// use forgiving_semver::VersionReq;
     ///
     /// let anything = VersionReq::any();
     /// ```
@@ -234,7 +234,7 @@ impl VersionReq {
     /// # Examples
     ///
     /// ```
-    /// use semver::VersionReq;
+    /// use forgiving_semver::VersionReq;
     ///
     /// let version = VersionReq::parse("=1.2.3");
     /// let version = VersionReq::parse(">1.2.3");
@@ -249,7 +249,7 @@ impl VersionReq {
     /// This example demonstrates error handling, and will panic.
     ///
     /// ```should_panic
-    /// use semver::VersionReq;
+    /// use forgiving_semver::VersionReq;
     ///
     /// let version = match VersionReq::parse("not a version") {
     ///     Ok(version) => version,
@@ -298,9 +298,9 @@ impl VersionReq {
     /// # Examples
     ///
     /// ```
-    /// extern crate semver_parser;
-    /// use semver::VersionReq;
-    /// use semver_parser::Compat;
+    /// extern crate forgiving_semver_parser;
+    /// use forgiving_semver::VersionReq;
+    /// use forgiving_semver_parser::Compat;
     ///
     /// # fn main() {
     ///     let cargo_version = VersionReq::parse_compat("1.2.3", Compat::Cargo);
@@ -336,8 +336,8 @@ impl VersionReq {
     /// # Examples
     ///
     /// ```
-    /// use semver::VersionReq;
-    /// use semver::Version;
+    /// use forgiving_semver::VersionReq;
+    /// use forgiving_semver::Version;
     ///
     /// let version = Version { major: 1, minor: 1, patch: 1, pre: vec![], build: vec![] };
     /// let exact = VersionReq::exact(&version);
@@ -358,8 +358,8 @@ impl VersionReq {
     /// # Examples
     ///
     /// ```
-    /// use semver::VersionReq;
-    /// use semver::Version;
+    /// use forgiving_semver::VersionReq;
+    /// use forgiving_semver::Version;
     ///
     /// let version = Version { major: 1, minor: 1, patch: 1, pre: vec![], build: vec![] };
     /// let exact = VersionReq::exact(&version);
@@ -386,8 +386,8 @@ impl VersionReq {
     /// # Examples
     ///
     /// ```
-    /// use semver::ReqParseError;
-    /// use semver::VersionReq;
+    /// use forgiving_semver::ReqParseError;
+    /// use forgiving_semver::VersionReq;
     ///
     /// fn use_is_exact() -> Result<(), ReqParseError> {
     ///   assert!(VersionReq::parse("=1.0.0")?.is_exact());
